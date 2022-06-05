@@ -41,13 +41,23 @@ client.on('close', function () {
   console.log(clientId + ' disconnected')
 })
 
-app.use(express.static('public'))
+app.use('/wagenweg170B/', express.static('public'))
 app.use(express.json()); 
 
-app.route('/solenoid/')
+app.route('/wagenweg170B/solenoid/')
   .post(function (req, res, next) {
-    res.send({'opened': req.body.solenoidid} );
-    client.publish('/wagenweg/planten', req.body.solenoidid.toString())            
+    
+    if(!req.body.switch) {
+      client.publish('/wagenweg/planten/off', req.body.solenoidid.toString());
+      res.send({'closed': req.body.solenoidid} );
+    } else if(req.body.switch) {
+      client.publish('/wagenweg/planten', req.body.solenoidid.toString());
+      res.send({'opened': req.body.solenoidid} );
+    }
   });
+app.route('/wagenweg170B/time/').post(function(req,res,next){
+  res.send({"interval":req.body.interval})
+  client.publish('/wagenweg/planten/time', (req.body.interval*1000).toString());
+});
 
-app.listen(3000)
+app.listen(8080)

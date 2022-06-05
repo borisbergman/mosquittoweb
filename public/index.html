@@ -19,26 +19,57 @@
 		integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
 		crossorigin="anonymous"></script>
 	<div id="div0" class="class='col-xs-3">
-
-		
 		<button id="button0" class="btn btn-primary btn-lg btn-block">1</button>
+		<button id="off0" class="btn btn-primary btn-lg btn-block">OFF</button>
+		<br />
 		<button id="button1" class="btn btn-primary btn-lg btn-block">2</button>
+		<button id="off1" class="btn btn-primary btn-lg btn-block">OFF</button>
+		<br />
 		<button id="button2" class="btn btn-primary btn-lg btn-block">3</button>
+		<button id="off2" class="btn btn-primary btn-lg btn-block">OFF</button>
+		<br />
 		<button id="button3" class="btn btn-primary btn-lg btn-block">4</button>
-		<button id="off" class="btn btn-primary btn-lg btn-block">OFF</button>
+		<button id="off3" class="btn btn-primary btn-lg btn-block">OFF</button>
+		<br />
+		<label for="timerange" class="form-label" id="time"></label>
+		<input type="range" class="form-range" id="timerange" min="1" max="20">
+
 	</div>
 	<script>
-		for (let i = 0; i < 4; i++) {
-			$("#button" + i).click(function (event) {				
+		$(document).ready(function () {
+			for (let i = 0; i < 4; i++) {
+				$("#button" + i).click(function (event) {
+					$.ajax({
+						url: '/wagenweg170B/solenoid/',
+						type: 'POST',
+						contentType: 'application/json',
+						data: JSON.stringify({ 'switch': true, 'solenoidid': i }),
+						//success: function (response) { }
+					})
+				});
+
+				$("#off" + i).click(function (event) {
+					$.ajax({
+						url: '/wagenweg170B/solenoid/',
+						type: 'POST',
+						contentType: 'application/json',
+						data: JSON.stringify({ 'switch': false, 'solenoidid': i }),
+						//success: function (response) { }
+					});
+				});
+			};
+			$("input[type=range]").on("change", function () {
 				$.ajax({
-        		url: '/solenoid/',
-        		type: 'POST',
-        		contentType: 'application/json',
-        		data: JSON.stringify({'solenoidid': i}),
-        		success: function(response){}
+					url: '/wagenweg170B/time/',
+					type: 'POST',
+					contentType: 'application/json',
+					data: JSON.stringify({ 'interval': $("#timerange").val() }),
+					//success: function (response) { }
+				});
+				$("#time").html($("#timerange").val());
 			});
-			});
-		}
+		});
+
 	</script>
 
 </body>
